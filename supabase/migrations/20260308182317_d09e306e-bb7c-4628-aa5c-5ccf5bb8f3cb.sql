@@ -1,0 +1,1 @@
+ALTER TABLE public.trainings ADD COLUMN is_paused boolean NOT NULL DEFAULT false;

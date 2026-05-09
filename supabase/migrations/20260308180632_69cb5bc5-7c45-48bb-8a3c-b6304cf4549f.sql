@@ -1,0 +1,1 @@
+ALTER TABLE public.audit_logs ALTER COLUMN record_id TYPE text;
