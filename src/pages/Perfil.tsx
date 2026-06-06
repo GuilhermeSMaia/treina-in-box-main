@@ -1,21 +1,24 @@
 import { useState } from "react";
 import { AppLayout } from "@/components/AppLayout";
 import { useAuth } from "@/contexts/AuthContext";
+import { useProfile } from "@/hooks/useProfile";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { LogOut, KeyRound, Mail, User } from "lucide-react";
+import { LogOut, KeyRound, Mail } from "lucide-react";
 import { toast } from "sonner";
 
 export default function Perfil() {
   const { user, signOut, resetPassword } = useAuth();
+  const { data: profile, isLoading } = useProfile();
   const [sendingReset, setSendingReset] = useState(false);
 
-  const name = user?.user_metadata?.username || "Usuário";
-  const lastName = user?.user_metadata?.last_name || "";
+  const name = profile?.username || "Usuário";
+  const lastName = profile?.last_name || "";
   const email = user?.email || "";
-  const avatarUrl = user?.user_metadata?.avatar_url;
+  const avatarUrl = profile?.avatar_url;
+
   const initials = `${name} ${lastName}`
     .trim()
     .split(" ")
@@ -37,6 +40,22 @@ export default function Perfil() {
     }
   };
 
+  if (isLoading) {
+    return (
+      <AppLayout>
+        <div className="max-w-lg mx-auto py-10 px-4 animate-pulse">
+          <Card>
+            <CardHeader className="items-center text-center gap-3">
+              <div className="h-20 w-20 rounded-full bg-muted" />
+              <div className="h-4 w-32 rounded bg-muted" />
+              <div className="h-3 w-48 rounded bg-muted" />
+            </CardHeader>
+          </Card>
+        </div>
+      </AppLayout>
+    );
+  }
+
   return (
     <AppLayout>
       <div className="max-w-lg mx-auto py-10 px-4">
@@ -48,7 +67,7 @@ export default function Perfil() {
                 {initials}
               </AvatarFallback>
             </Avatar>
-            <CardTitle className="text-lg">{fullName}</CardTitle>
+            <CardTitle className="text-lg">{name} {lastName}</CardTitle>
             <p className="text-sm text-muted-foreground flex items-center gap-1.5">
               <Mail className="h-3.5 w-3.5" />
               {email}

@@ -74,7 +74,6 @@ export function AppSidebar() {
   const navItems = isTrainingContext && trainingId
     ? getTrainingNavItems(trainingId)
     : mainNavItems;
-  console.log("User profile:", profile);
   const initials = `${profile?.username?.[0] ?? ""}${profile?.last_name?.[0] ?? ""}`.toUpperCase() || "U";
 
 
