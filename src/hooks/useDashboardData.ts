@@ -21,6 +21,7 @@ export interface DashboardData {
     title: string;
     scheduled_at: string;
     training_id: string;
+    trainings: { title: string } | null;
   } | null;
   totalPosts: number;
 }
@@ -46,7 +47,7 @@ export function useDashboardData() {
         supabase.from("training_lessons").select("id, module_id"),
         supabase
           .from("live_sessions")
-          .select("title, scheduled_at, training_id")
+          .select("title, scheduled_at, training_id, trainings(title)")
           .gte("scheduled_at", new Date().toISOString())
           .order("scheduled_at", { ascending: true })
           .limit(1),

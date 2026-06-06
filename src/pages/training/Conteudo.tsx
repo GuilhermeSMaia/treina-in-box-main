@@ -22,6 +22,7 @@ import { RichTextEditor } from "@/components/RichTextEditor";
 import { RichTextDisplay } from "@/components/RichTextDisplay";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { useProfile } from "@/hooks/useProfile";
 
 const Conteudo = () => {
   const { trainingId } = useParams();
@@ -62,6 +63,7 @@ const Conteudo = () => {
     deletePost.mutate(deleteTargetId, { onSuccess: () => setDeleteTargetId(null) });
   };
 
+  const {data: profile} = useProfile();
   if (isLoading) {
     return (
       <AppLayout>
@@ -125,12 +127,7 @@ const Conteudo = () => {
           <div className="space-y-3">
             {posts.map((post) => {
               const isEditing = editingId === post.id;
-              const initials = (post.profile?.full_name ?? "?")
-                .split(" ")
-                .map((n) => n[0])
-                .join("")
-                .slice(0, 2)
-                .toUpperCase();
+              const initials = `${profile?.username?.[0] ?? ""}${profile?.last_name?.[0] ?? ""}`.toUpperCase() || "U";
 
               return (
                 <Card key={post.id} className="border shadow-none">
@@ -146,7 +143,7 @@ const Conteudo = () => {
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2 flex-wrap">
                             <span className="text-sm font-medium text-foreground">
-                              {post.profile?.full_name ?? "Usuário"}
+                              {profile?.username ?? "Usuário"}
                             </span>
                             <span className="text-xs text-muted-foreground">
                               {formatDistanceToNow(new Date(post.created_at), {

@@ -9,6 +9,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2, AlertCircle, Mail, ArrowLeft } from "lucide-react";
 import logo from "@/assets/logo.png";
 import { z } from "zod";
+import { handleError } from "@/lib/errors";
 
 type View = "login" | "signup" | "forgot";
 
@@ -18,7 +19,8 @@ const loginSchema = z.object({
 });
 
 const signupSchema = z.object({
-  fullName: z.string().trim().min(1, "O nome é obrigatório"),
+  username: z.string().trim().min(1, "O nome é obrigatório"),
+  last_name: z.string().trim().min(1, "O sobrenome é obrigatório"),
   email: z.string().trim().email("Email inválido"),
   password: z.string().min(6, "A senha deve ter pelo menos 6 caracteres"),
   confirmPassword: z.string(),
@@ -35,6 +37,7 @@ const Landing = () => {
   const { session, loading, signInWithGoogle, signInWithEmail, signUpWithEmail, resetPassword } = useAuth();
   const [searchParams] = useSearchParams();
   const inviteToken = searchParams.get("invite");
+  
 
   const [view, setView] = useState<View>(inviteToken ? "signup" : "login");
   const [signingIn, setSigningIn] = useState(false);
@@ -43,7 +46,8 @@ const Landing = () => {
   const [success, setSuccess] = useState<string | null>(null);
 
   // Form fields
-  const [fullName, setFullName] = useState("");
+  const [username, setUsername] = useState("");
+  const [last_name, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -111,7 +115,8 @@ const Landing = () => {
     setError(null);
     setSuccess(null);
     setFieldErrors({});
-    setFullName("");
+    setUsername("");
+    setLastName("");
     setEmail("");
     setPassword("");
     setConfirmPassword("");
@@ -151,7 +156,7 @@ const Landing = () => {
         setSubmitting(true);
         await signInWithEmail(email, password);
       } else if (view === "signup") {
-        const result = signupSchema.safeParse({ fullName, email, password, confirmPassword });
+        const result = signupSchema.safeParse({ username, last_name, email, password, confirmPassword });
         if (!result.success) {
           const errs: Record<string, string> = {};
           result.error.errors.forEach((e) => { errs[e.path[0] as string] = e.message; });
@@ -181,7 +186,7 @@ const Landing = () => {
         const extraMeta: Record<string, string> = {};
         if (inviteToken) extraMeta.invite_token = inviteToken;
 
-        const { confirmEmail } = await signUpWithEmail(email, password, fullName, Object.keys(extraMeta).length > 0 ? extraMeta : undefined);
+        const { confirmEmail } = await signUpWithEmail(email, password, username, last_name, Object.keys(extraMeta).length > 0 ? extraMeta : undefined);
         if (confirmEmail) {
           setSuccess("Conta criada! Verifique seu email para confirmar o cadastro.");
         }
@@ -197,9 +202,9 @@ const Landing = () => {
         await resetPassword(email);
         setSuccess("Email enviado! Verifique sua caixa de entrada para redefinir a senha.");
       }
-    } catch (err: any) {
-      const msg = err?.message || "Ocorreu um erro. Tente novamente.";
-      setError(msg);
+    } catch (err: unknown) {
+      handleError(err, setError);
+      
     } finally {
       setSubmitting(false);
     }
@@ -291,18 +296,35 @@ const Landing = () => {
             )}
 
             {view === "signup" && (
+              <div>
+
               <div className="space-y-1.5">
-                <Label htmlFor="fullName">Nome completo</Label>
+                <Label htmlFor="username">Nome</Label>
                 <Input
-                  id="fullName"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
+                  id="username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                   placeholder="Seu nome"
                   autoComplete="name"
                 />
-                {fieldErrors.fullName && (
-                  <p className="text-xs text-destructive">{fieldErrors.fullName}</p>
+                {fieldErrors.username && (
+                  <p className="text-xs text-destructive">{fieldErrors.username}</p>
                 )}
+              </div>
+              <div>
+                
+              <Label htmlFor="last_name">Sobrenome</Label>
+                <Input
+                  id="last_name"
+                  value={last_name}
+                  onChange={(e) => setLastName(e.target.value)}
+                  placeholder="Seu sobrenome"
+                  autoComplete="name"
+                  />
+                {fieldErrors.last_name && (
+                  <p className="text-xs text-destructive">{fieldErrors.last_name}</p>
+                )}
+                </div>
               </div>
             )}
 

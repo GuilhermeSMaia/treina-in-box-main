@@ -31,8 +31,8 @@ export function EnrollmentsTab() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("profiles")
-        .select("user_id, full_name")
-        .order("full_name");
+        .select("user_id, username, last_name")
+        .order("username, last_name");
       if (error) throw error;
       return data ?? [];
     },
@@ -88,7 +88,7 @@ export function EnrollmentsTab() {
   });
 
   const getUserName = (userId: string) =>
-    students.find((s) => s.user_id === userId)?.full_name || "Sem nome";
+    students.find((s) => s.user_id === userId)?.username + " " + students.find((s) => s.user_id === userId)?.last_name || "Sem nome";
 
   const availableStudents = students.filter((s) => !enrolledUserIds.has(s.user_id));
 
@@ -117,7 +117,7 @@ export function EnrollmentsTab() {
                   <SelectTrigger><SelectValue placeholder="Selecione um aluno" /></SelectTrigger>
                   <SelectContent>
                     {availableStudents.map((s) => (
-                      <SelectItem key={s.user_id} value={s.user_id}>{s.full_name || "Sem nome"}</SelectItem>
+                      <SelectItem key={s.user_id} value={s.user_id}>{s.username + " " + s.last_name || "Sem nome"}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>

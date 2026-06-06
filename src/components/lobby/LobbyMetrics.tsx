@@ -6,8 +6,8 @@ import type { DashboardData } from "@/hooks/useDashboardData";
 interface Props {
   data: DashboardData;
 }
-
 export function LobbyMetrics({ data }: Props) {
+  console.log("LobbyMetrics data:", data);
   const nextSessionLabel = data.nextSession
     ? format(new Date(data.nextSession.scheduled_at), "dd MMM, HH:mm", { locale: ptBR })
     : "Nenhuma";
@@ -16,7 +16,9 @@ export function LobbyMetrics({ data }: Props) {
     {
       title: "Próxima Aula",
       value: nextSessionLabel,
-      subtitle: data.nextSession?.title ?? "sem aulas agendadas",
+      subtitle: data.nextSession
+        ? `${data.nextSession.title} - ${data.nextSession.trainings?.title ?? ""}`
+        : "sem aulas agendadas",
       icon: Calendar,
     },
     {

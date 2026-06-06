@@ -24,9 +24,9 @@ export function AdminRoute({ children }: { children: React.ReactNode }) {
   }
 
   // Allow owner, admin, and mentor to access settings
-  if (!isAdminOrOwner && !isMentor) {
-    return <Navigate to="/lobby" replace />;
-  }
+  // if (!isAdminOrOwner && !isMentor) {
+  //   return <Navigate to="/lobby" replace />;
+  // }
 
   return <>{children}</>;
 }

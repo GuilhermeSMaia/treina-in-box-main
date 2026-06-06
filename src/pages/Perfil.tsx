@@ -12,10 +12,12 @@ export default function Perfil() {
   const { user, signOut, resetPassword } = useAuth();
   const [sendingReset, setSendingReset] = useState(false);
 
-  const fullName = user?.user_metadata?.full_name || "Usuário";
+  const name = user?.user_metadata?.username || "Usuário";
+  const lastName = user?.user_metadata?.last_name || "";
   const email = user?.email || "";
   const avatarUrl = user?.user_metadata?.avatar_url;
-  const initials = fullName
+  const initials = `${name} ${lastName}`
+    .trim()
     .split(" ")
     .map((n: string) => n[0])
     .join("")

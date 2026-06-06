@@ -39,6 +39,7 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
+import { useProfile } from "@/hooks/useProfile";
 
 const mainNavItems = [
   { title: "Lobby", url: "/lobby", icon: LayoutDashboard },
@@ -58,6 +59,7 @@ export function AppSidebar() {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
+  const { data: profile } = useProfile();
   const { isAdminOrOwner, isMentor } = useUserRole();
   const { data: trainings } = useTrainings();
 
@@ -72,13 +74,9 @@ export function AppSidebar() {
   const navItems = isTrainingContext && trainingId
     ? getTrainingNavItems(trainingId)
     : mainNavItems;
+  console.log("User profile:", profile);
+  const initials = `${profile?.username?.[0] ?? ""}${profile?.last_name?.[0] ?? ""}`.toUpperCase() || "U";
 
-  const initials = user?.user_metadata?.full_name
-    ?.split(" ")
-    .map((n: string) => n[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase() || "U";
 
   return (
     <Sidebar collapsible="icon">
@@ -153,7 +151,7 @@ export function AppSidebar() {
               {!collapsed && (
                 <div className="flex-1 min-w-0 text-left">
                   <p className="text-xs font-medium text-sidebar-foreground truncate">
-                    {user?.user_metadata?.full_name || "Usuário"}
+                    {profile?.username || "Usuário"}
                   </p>
                   <p className="text-[10px] text-gold-muted truncate">
                     {user?.email}
@@ -170,12 +168,12 @@ export function AppSidebar() {
               <User className="mr-2 h-4 w-4" />
               Perfil
             </DropdownMenuItem>
-            {(isAdminOrOwner || isMentor) && (
+            {/* {(isAdminOrOwner || isMentor) && ( */}
               <DropdownMenuItem onClick={() => navigate("/configuracoes")} className="cursor-pointer">
                 <Settings className="mr-2 h-4 w-4" />
                 Configurações
               </DropdownMenuItem>
-            )}
+            {/* )} */}
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={signOut} className="cursor-pointer text-destructive focus:text-destructive">
               <LogOut className="mr-2 h-4 w-4" />

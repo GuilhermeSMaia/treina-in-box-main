@@ -21,7 +21,8 @@ type AppRole = Database["public"]["Enums"]["app_role"];
 interface ProfileWithRole {
   id: string;
   user_id: string;
-  full_name: string | null;
+  username: string | null;
+  last_name: string | null;
   enrollment_status: string;
   role: AppRole | null;
 }
@@ -38,8 +39,8 @@ export function UsersTab() {
     queryFn: async () => {
       const { data: profiles, error: pErr } = await supabase
         .from("profiles")
-        .select("id, user_id, full_name, enrollment_status")
-        .order("full_name", { ascending: true });
+        .select("id, user_id, username, last_name, enrollment_status")
+        .order("username", { ascending: true });
       if (pErr) throw pErr;
 
       const { data: roles, error: rErr } = await supabase
@@ -93,10 +94,11 @@ export function UsersTab() {
     },
   });
 
-  const filtered = users.filter((p) => {
-    const q = search.toLowerCase();
-    return !q || (p.full_name ?? "").toLowerCase().includes(q);
-  });
+ const filtered = users.filter((p) => {
+  const q = search.toLowerCase();
+  const full_name = `${p.username ?? ""} ${p.last_name ?? ""}`.trim();
+  return !q || full_name.toLowerCase().includes(q);
+});
 
   const pagination = useTablePagination(filtered);
 
@@ -154,7 +156,7 @@ export function UsersTab() {
                 <TableBody>
                   {pagination.paginatedItems.map((p) => (
                     <TableRow key={p.id}>
-                      <TableCell className="font-medium">{p.full_name || "Sem nome"}</TableCell>
+                      <TableCell className="font-medium">{p.username + " " + p.last_name || "Sem nome"}</TableCell>
                       <TableCell>{roleBadge(p.role)}</TableCell>
                       <TableCell>{statusBadge(p.enrollment_status)}</TableCell>
                       <TableCell className="text-right">

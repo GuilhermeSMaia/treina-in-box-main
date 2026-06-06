@@ -10,13 +10,14 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { AlertCircle } from "lucide-react";
+import { useProfile } from "@/hooks/useProfile";
 
 const Lobby = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { data, isLoading, error } = useDashboardData();
-  
-  const firstName = user?.user_metadata?.full_name?.split(" ")[0] || "Usuário";
+  const {data: profile} = useProfile();
+  const firstName = profile?.username?.split(" ")[0] || "Usuário";
 
   const greeting = () => {
     const h = new Date().getHours();

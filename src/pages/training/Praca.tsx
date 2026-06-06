@@ -144,7 +144,7 @@ const Praca = () => {
               const canEditPost = (isAuthor && !isExpired) || canModerate;
               const canDeletePost = isAuthor || canModerate;
               const isEditing = editingId === post.id;
-              const initials = (post.profile?.full_name ?? "U")
+              const initials = (post.profile?.username ?? "U")
                 .split(" ")
                 .map((w) => w[0])
                 .join("")
@@ -165,7 +165,7 @@ const Praca = () => {
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2 flex-wrap">
                             <span className="text-sm font-medium text-foreground">
-                              {post.profile?.full_name ?? "Usuário"}
+                              {post.profile?.username ?? "Usuário"}
                             </span>
                             <span className="text-xs text-muted-foreground">
                               {formatDistanceToNow(new Date(post.created_at), {

@@ -11,7 +11,8 @@ export interface ContentPost {
   created_at: string;
   updated_at: string;
   profile?: {
-    full_name: string | null;
+    username: string | null;
+    last_name: string | null;
     avatar_url: string | null;
   };
 }
@@ -37,7 +38,7 @@ export function useContentPosts(trainingId?: string) {
 
       const { data: profiles } = await supabase
         .from("profiles")
-        .select("user_id, full_name, avatar_url")
+        .select("user_id, username, last_name, avatar_url")
         .in("user_id", userIds);
 
       const profileMap = new Map(
