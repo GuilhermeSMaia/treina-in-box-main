@@ -3,6 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "homepage": "https://GuilhermeSMaia.github.io/treina-in-box-main",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -10,7 +11,9 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
@@ -98,11 +101,6 @@
     "typescript-eslint": "^8.38.0",
     "vite": "^5.4.19",
     "vitest": "^3.2.4"
-  },
-  "homepage": "https://GuilhermeSMaia.github.io/treina-in-box-main",
-  "scripts":{
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist"
   }
   
 }
