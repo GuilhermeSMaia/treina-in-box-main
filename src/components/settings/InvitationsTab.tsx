@@ -71,7 +71,7 @@ export function InvitationsTab() {
     },
   });
 
-  const appUrl = window.location.origin;
+  const appUrl = `${window.location.origin}${import.meta.env.BASE_URL}`.replace(/\/$/, "");
 
   const filteredInvitations = useMemo(() => {
     return invitations.filter((inv: any) => {
@@ -92,22 +92,40 @@ export function InvitationsTab() {
 
   const sendInvite = useMutation({
     mutationFn: async () => {
-      if (!user?.id) throw new Error("Não autenticado");
+  if (!user?.id) throw new Error("Não autenticado");
 
-      const payload: Record<string, unknown> = {
-        role,
-        invited_by: user.id,
-        channel,
-        training_id: trainingId && trainingId !== "none" ? trainingId : null,
-        email: channel === "email" ? email.trim().toLowerCase() : `link-${Date.now()}@invite`,
-        phone: channel === "whatsapp" ? phone.trim() : null,
-      };
+  const payload: Record<string, unknown> = {
+    role,
+    invited_by: user.id,
+    channel,
+    training_id: trainingId && trainingId !== "none" ? trainingId : null,
+    email: channel === "email" ? email.trim().toLowerCase() : `link-${Date.now()}@invite`,
+    phone: channel === "whatsapp" ? phone.trim() : null,
+  };
 
-      const { data, error } = await supabase.from("invitations").insert(payload as any).select().single();
-      if (error) throw error;
-      return data;
-    },
-    onSuccess: (data) => {
+  const { data, error } = await supabase
+    .from("invitations")
+    .insert(payload as any)
+    .select()
+    .single();
+
+  if (error) throw error;
+
+  // Se o token não veio no insert (trigger assíncrono), busca novamente
+  if (!data.invite_token) {
+    const { data: fetched, error: fetchError } = await supabase
+      .from("invitations")
+      .select("*")
+      .eq("id", data.id)
+      .single();
+
+    if (fetchError) throw fetchError;
+    if (!fetched.invite_token) throw new Error("Token não gerado. Verifique o trigger no Supabase.");
+    return fetched;
+  }
+
+  return data;
+},    onSuccess: (data) => {
       const inviteLink = `${appUrl}/?invite=${data.invite_token}`;
 
       if (channel === "whatsapp") {
