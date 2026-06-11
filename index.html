@@ -10,7 +10,18 @@
 
     <!-- TODO: Update og:title to match your application name -->
     
-    
+    <script>
+  (function(l) {
+    if (l.search[1] === '/') {
+      var decoded = l.search.slice(1).split('&').map(function(s) {
+        return s.replace(/~and~/g, '&')
+      }).join('?');
+      window.history.replaceState(null, null,
+        l.pathname.slice(0, -1) + decoded + l.hash
+      );
+    }
+  }(window.location))
+</script>
     <meta property="og:type" content="website" />
     <meta property="og:image" content="https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/74a57128-d33f-4875-9cf1-d8b4662ea939/id-preview-8c203796--da60d54f-5218-4b34-b011-cfffdb06ae02.lovable.app-1772985339850.png">
 
