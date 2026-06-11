@@ -26,7 +26,7 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
+      <BrowserRouter basename="/treina-in-box-main"> 
         <AuthProvider>
           <Routes>
             <Route path="/" element={<Landing />} />
